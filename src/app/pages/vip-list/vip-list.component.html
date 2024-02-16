@@ -1,1 +1,38 @@
-<p>vip-list works!</p>
+<div nz-row style="padding-bottom: 10px;">
+    <div nz-col nzSpan="4">
+        <input type="text" nz-input placeholder="输入手机号/用户名" [(ngModel)]="userCode" />
+    </div>
+    <div nz-col nzSpan="2">
+        <button nz-button nzType="primary" (click)="queryClick()">
+            <span nz-icon nzType="search"></span>
+            查询
+        </button>
+    </div>
+</div>
+<nz-table #userListTable nzShowPagination nzShowSizeChanger [nzData]="userList">
+    <thead>
+        <tr>
+            <th>用户ID</th>
+            <th>用户名</th>
+            <th>手机号</th>
+            <th>创建时间</th>
+            <th>最后登录时间</th>
+            <th [nzSortFn]="vipFlagSortFn" [nzSortPriority]="true">是否为会员</th>
+            <th [nzSortFn]="expirationTimeSortFn">会员过期时间</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let data of userListTable.data">
+            <td>{{ data.userCode }}</td>
+            <td>{{ data.userName }}</td>
+            <td>{{ data.phoneNumber }}</td>
+            <td>{{ data.createTime|date:'yyyy/MM/dd HH:mm:ss' }}</td>
+            <td>{{ data.lastTime|date:'yyyy/MM/dd HH:mm:ss' }}</td>
+            <td>
+                <nz-tag *ngIf="data.vipFlag==0" [nzColor]="'grey'">{{GetVipFlagName(data.vipFlag)}}</nz-tag>
+                <nz-tag *ngIf="data.vipFlag==1" [nzColor]="'green'">{{GetVipFlagName(data.vipFlag)}}</nz-tag>
+            </td>
+            <td>{{ data.expirationTime|date:'yyyy/MM/dd HH:mm:ss' }}</td>
+        </tr>
+    </tbody>
+</nz-table>

@@ -16,7 +16,8 @@ export interface UserData {
   styleUrls: ['./vip-list.component.css']
 })
 export class VipListComponent {
-  loading = false;
+  loading: boolean = false;
+  loginUser: string = '';
 
   userCode: string = '';
   userList: any = [];
@@ -34,6 +35,7 @@ export class VipListComponent {
 
   queryClick() {
     this.loading = true;
+    this.userList = [];
     this.userService.GetUserList(this.userCode).subscribe(data => {
       this.loading = false;
       let res = data;

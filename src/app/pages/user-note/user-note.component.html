@@ -1,1 +1,37 @@
-<p>user-note works!</p>
+<div nz-row style="padding-bottom: 10px;">
+    <div nz-col nzSpan="4">
+        <nz-select nzShowSearch nzAllowClear nzPlaceHolder="选择应用类型" [(ngModel)]="selectedAppCode" style="width: 100%;">
+            <nz-option *ngFor="let data of appCodeList" [nzLabel]="data.codeName"
+                [nzValue]="data.codeValue"></nz-option>
+        </nz-select>
+    </div>
+    <div nz-col nzSpan="4">
+        <input type="text" nz-input placeholder="输入手机号/用户名" [(ngModel)]="userCode" />
+    </div>
+    <div nz-col nzSpan="2">
+        <button nz-button nzType="primary" (click)="queryClick()">
+            <span nz-icon nzType="search"></span>
+            查询
+        </button>
+    </div>
+</div>
+<nz-table #userNoteListTable nzShowPagination nzShowSizeChanger [nzData]="userNoteList">
+    <thead>
+        <tr>
+            <th [nzSortFn]="userCodeSortFn">用户ID</th>
+            <th [nzSortFn]="appCodeSortFn">应用名称</th>
+            <th>事件内容</th>
+            <th [nzSortFn]="noteDateSortFn">事件时间</th>
+            <th [nzSortFn]="updateTimeSortFn">保存时间</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let data of userNoteListTable.data">
+            <td>{{ data.userCode }}</td>
+            <td>{{ data.appCodeName }}</td>
+            <td>{{ data.title }}</td>
+            <td>{{ data.noteDate|date:'yyyy/MM/dd HH:mm:ss' }}</td>
+            <td>{{ data.updateTime|date:'yyyy/MM/dd HH:mm:ss' }}</td>
+        </tr>
+    </tbody>
+</nz-table>

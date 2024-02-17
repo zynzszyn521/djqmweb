@@ -1,4 +1,5 @@
 export const environment = {
     production: true,
-    apiUrl: 'http://120.77.246.36:12223',
+    baseUrl: 'https://www.djwh.fun',
+    apiUrl: 'https://www.djwh.fun/djqmapi',
 };

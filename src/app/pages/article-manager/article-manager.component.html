@@ -1,1 +1,75 @@
-<p>article-manager works!</p>
+<div nz-row style="padding-bottom: 10px;">
+    <div nz-col nzSpan="4">
+        <input type="text" nz-input placeholder="输入文章标题" [(ngModel)]="articleTitle" />
+    </div>
+    <div nz-col nzSpan="2">
+        <button nz-button nzType="primary" (click)="queryClick()">
+            <span nz-icon nzType="search"></span>
+            查询
+        </button>
+    </div>
+    <div nz-col nzSpan="3">
+        <button nz-button nzType="default" (click)="newClick(tlArticleDetail)">
+            <span nz-icon nzType="plus"></span>
+            新增
+        </button>
+
+    </div>
+</div>
+<nz-table #articleListTable nzShowPagination nzShowSizeChanger [nzData]="articleList">
+    <thead>
+        <tr>
+            <th>文章ID</th>
+            <th>文章标题</th>
+            <th>文章缩略图</th>
+            <th>创建人</th>
+            <th>阅读次数</th>
+            <th [nzSortFn]="createTimeSortFn">创建时间</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let data of articleListTable.data">
+            <td>{{ data.articleId }}</td>
+            <td>{{ data.title }}</td>
+            <td>{{ data.picUrl }}</td>
+            <td>{{ data.author }}</td>
+            <td>{{ data.viewTimes }}</td>
+            <td>{{ data.createTime|date:'yyyy/MM/dd HH:mm:ss' }}</td>
+            <th><button nz-button nzSize="small" nzType="primary"
+                    (click)="editArticleClick(tlArticleDetail,data)">查看</button></th>
+        </tr>
+    </tbody>
+</nz-table>
+
+<ng-template #tlArticleDetail>
+    <form nz-form>
+        <nz-form-item style="padding-bottom: 10px;">
+            <nz-form-label [nzSpan]="1" nzFor="phoneNumber">标题：</nz-form-label>
+            <nz-form-control [nzSpan]="20">
+                <input type="text" nz-input placeholder="文章标题" [(ngModel)]="articleDetail.title" name="title" />
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item style="padding-bottom: 10px;">
+            <nz-form-label [nzSpan]="1">图片：</nz-form-label>
+            <nz-form-control [nzSpan]="20">
+                <nz-upload style="width: 128px;height: 128px;" nzName="avatar" nzListType="picture-card"
+                    [nzBeforeUpload]="beforeUpload" [(nzFileList)]="fileList" [nzShowButton]="fileList.length < 1">
+                    <span>
+                        <span nz-icon nzType="upload"></span>
+                        上传
+                    </span>
+                </nz-upload>
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item style="padding-bottom: 10px;">
+            <nz-form-label [nzSpan]="1">内容：</nz-form-label>
+            <nz-form-control [nzSpan]="20">
+                <quill-editor [preserveWhitespace]="true" [modules]="modules" [(ngModel)]="articleDetail.content"
+                    (onEditorCreated)="editorCreated($event)" name="content"></quill-editor>
+                <p style="color:blue;font-size: 12px;">*需要首行缩进时，按两次TAB键</p>
+            </nz-form-control>
+
+        </nz-form-item>
+    </form>
+</ng-template>

@@ -22,24 +22,78 @@ export class ArticleManagerComponent {
   articleList: any = [];
   articleDetail: any = {};
   actionType: string = '';
+  quillModules: any;
   fileList: NzUploadFile[] = [];
 
-  modules: any = {
-    toolbar: [
-      ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-      ['blockquote'],
-      [{ 'header': 1 }, { 'header': 2 }],               // custom button values
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-      [{ 'indent': '-1' }, { 'indent': '+1' }],          // outdent/indent
-      [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-      [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-      [{ 'font': [] }],
-      [{ 'align': [] }],
-      ['clean'],                                         // remove formatting button
-      ['image']                         // link and image, video 比如说这里用不到 video 就可以把 video 去掉
-    ],
+  constructor(
+    private articleService: ArticleService,
+    private fileTempService: FileTempService,
+    private message: NzMessageService,
+    private modalService: NzModalService,
+  ) {
+    this.quillModules = {
+      toolbar: [
+        ['bold', 'italic', 'underline', 'strike'],        // 加粗、斜体、下划线、删除线
+        ['blockquote'],
+        [{ 'header': 1 }, { 'header': 2 }],               // 标题1、标题2
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }],   // 有序列表、无序列表
+        [{ 'indent': '-1' }, { 'indent': '+1' }],          // outdent/indent
+        [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+        [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+        [{ 'font': [] }],
+        [{ 'align': [] }],
+        ['clean'],                                         // remove formatting button
+        ['image']                         // link and image, video 比如说这里用不到 video 就可以把 video 去掉
+      ],
+    }
   }
+
+  ngOnInit(): void {
+
+  }
+
+  // 上传图片到服务器
+  uploadImage(quill: any) {
+    const input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    input.setAttribute('style', 'display: none');
+    input.onchange = (event: any) => {
+      const file = event.target.files[0];
+      const formData = new FormData();
+      formData.append('files[]', file);
+      formData.append('guid', this.articleDetail.articleId);
+      debugger;
+      this.fileTempService.UploadFileTemp(formData, 'Article', 'Detail').subscribe(data => {
+        this.loading = false;
+        let res = data;
+        if (res.successed) {
+          debugger;
+          // 获取服务器返回的图片地址
+          const imageUrl = environment.baseUrl + '/' + res.msg;
+          // 在富文本编辑器中插入图片
+          const range = quill.getSelection();
+          quill.insertEmbed(range.index, 'image', imageUrl);
+          this.articleDetail.content = quill.root.innerHTML;
+        } else {
+          this.message.error(res.msg);
+        }
+      }, (error: Error) => {
+        this.loading = false;
+        this.message.error('请求发生错误!');
+        console.log(error);
+      });
+    };
+    input.click();
+  }
+  initEditor(quill: any) {
+    const toolbar = quill.getModule('toolbar');
+    toolbar.addHandler('image', () => {
+      this.uploadImage(quill);
+    });
+  }
+
 
   beforeUpload = (file: any, _fileList: NzUploadFile[]): Observable<boolean> =>
     new Observable((observer: Observer<boolean>) => {
@@ -80,18 +134,6 @@ export class ArticleManagerComponent {
       });
     });
 
-  constructor(
-    private articleService: ArticleService,
-    private fileTempService: FileTempService,
-    private message: NzMessageService,
-    private modalService: NzModalService,
-  ) {
-
-  }
-
-  ngOnInit(): void {
-
-  }
 
   queryClick() {
     this.loading = true;
@@ -123,9 +165,7 @@ export class ArticleManagerComponent {
       nzOkText: '保存',
       nzCancelText: '關閉',
       nzMaskClosable: false,
-      nzOnOk: () => new Promise((resolve) => {
-        return this.saveArticleDetail();
-      })
+      nzOnOk: () => this.saveArticleDetail()
     });
   }
 
@@ -147,8 +187,8 @@ export class ArticleManagerComponent {
               name: fileName,
               url: environment.baseUrl + '/' + this.articleDetail.picUrl, // 图片的URL
               status: 'done', // 设置为 'done' 表示已上传完成
-              size: 20546, // 图片的大小
-              type: 'image/jpeg', // 图片的类型
+              size: 0, // 图片的大小
+              type: '', // 图片的类型
             };
             this.fileList.push(file);
           }
@@ -188,6 +228,7 @@ export class ArticleManagerComponent {
         this.message.error('请上传图片!');
         return resolve(false);
       }
+      debugger;
       this.articleDetail.content = this.articleDetail.content.replaceAll('		', '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
       this.articleDetail.content = this.articleDetail.content.replaceAll('<img', '<img style="width: 100%;"');
       let postData = {
@@ -218,21 +259,6 @@ export class ArticleManagerComponent {
     });
   }
 
-  editorCreated(quill: any) {
-    // const toolbar = quill.getModule('toolbar');
-    // // 给工具栏的image功能添加自定义函数，注意this指向问题
-    // toolbar.addHandler('image', this.imgFun.bind(this));
-    // // 保存quill对象
-    // this.editor = quill;
-  }
-
-  imgFun(): void {
-    // // 计算用户选择的范围，可选是否要求焦点在编辑器上(如果focus为true，且焦点会一直在编辑器内，且不改变选区)。如果焦点不在编辑器上，将会返回null。
-    // let index = this.editor.getSelection(true).index;
-    // // 图片上传完成之后会返回图片的 URL 地址这时就可以往富文本插入一张图片
-    // this.editor.insertEmbed(index, 'image', 'url');
-  }
-
   createTimeSortFn(a: any, b: any) {
     debugger;
     if (a.createTime ?? new Date() < b.createTime ?? new Date()) {
@@ -241,26 +267,6 @@ export class ArticleManagerComponent {
       return 1;
     } else {
       return 0;
-    }
-  }
-
-
-  handleChange(info: { file: NzUploadFile }): void {
-    switch (info.file.status) {
-      case 'uploading':
-        this.loading = true;
-        break;
-      case 'done':
-        // Get this url from response in real world.
-        // this.getBase64(info.file!.originFileObj!, (img: string) => {
-        //   this.loading = false;
-        //   this.avatarUrl = img;
-        // });
-        break;
-      case 'error':
-        // this.msg.error('Network error');
-        this.loading = false;
-        break;
     }
   }
 }

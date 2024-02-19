@@ -21,7 +21,6 @@
         <tr>
             <th>文章ID</th>
             <th>文章标题</th>
-            <th>文章缩略图</th>
             <th>创建人</th>
             <th>阅读次数</th>
             <th [nzSortFn]="createTimeSortFn">创建时间</th>
@@ -32,7 +31,6 @@
         <tr *ngFor="let data of articleListTable.data">
             <td>{{ data.articleId }}</td>
             <td>{{ data.title }}</td>
-            <td>{{ data.picUrl }}</td>
             <td>{{ data.author }}</td>
             <td>{{ data.viewTimes }}</td>
             <td>{{ data.createTime|date:'yyyy/MM/dd HH:mm:ss' }}</td>
@@ -65,8 +63,8 @@
         <nz-form-item style="padding-bottom: 10px;">
             <nz-form-label [nzSpan]="1">内容：</nz-form-label>
             <nz-form-control [nzSpan]="20">
-                <quill-editor [preserveWhitespace]="true" [modules]="modules" [(ngModel)]="articleDetail.content"
-                    (onEditorCreated)="editorCreated($event)" name="content"></quill-editor>
+                <quill-editor [preserveWhitespace]="true" [modules]="quillModules" [(ngModel)]="articleDetail.content"
+                    (onEditorCreated)="initEditor($event)" name="content"></quill-editor>
                 <p style="color:blue;font-size: 12px;">*需要首行缩进时，按两次TAB键</p>
             </nz-form-control>
 

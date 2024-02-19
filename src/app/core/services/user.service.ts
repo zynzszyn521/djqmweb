@@ -13,6 +13,11 @@ export class UserService {
         this.options = { headers: this.headers };
     }
 
+    public Login(postData): Observable<any> {
+        let par = '/api/User/Login';
+        return this.http.post(environment.apiUrl + par, postData);
+    }
+
     public GetUserInfo(userCode: string): Observable<any> {
         let par = '/api/User/GetUserInfo?userCode=' + userCode;
         return this.http.get(environment.apiUrl + par);

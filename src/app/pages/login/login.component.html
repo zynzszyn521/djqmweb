@@ -1,0 +1,34 @@
+<nz-spin [nzSpinning]="loading">
+    <div class="center-container">
+        <nz-card>
+            <div>
+                <h2 style="text-align: center;">后台管理系统</h2>
+                <div class="full-with">
+                    <form nz-form class="login-form-wrap" [formGroup]="validateForm" (ngSubmit)="submitForm()">
+                        <nz-form-item>
+                            <nz-form-control nzErrorTip="">
+                                <input nzSize="large" [placeholder]="" type="text" nz-input formControlName="userName"
+                                    placeholder="" />
+                            </nz-form-control>
+                        </nz-form-item>
+                        <nz-form-item>
+                            <nz-form-control nzErrorTip="">
+                                <nz-input-group [nzSize]="'large'" [nzSuffix]="suffixTemplate">
+                                    <input autocomplete="on" [placeholder]=""
+                                        [type]="passwordVisible ? 'text' : 'password'" nz-input
+                                        formControlName="password" placeholder="" />
+                                </nz-input-group>
+                                <ng-template #suffixTemplate>
+                                    <i nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'"
+                                        (click)="passwordVisible = !passwordVisible"></i>
+                                </ng-template>
+                            </nz-form-control>
+                        </nz-form-item>
+                        <button nz-button nzSize="large" class="full-with m-t-15 btn" [nzType]="'primary'">登
+                            录</button>
+                    </form>
+                </div>
+            </div>
+        </nz-card>
+    </div>
+</nz-spin>

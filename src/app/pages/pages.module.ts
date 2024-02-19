@@ -33,6 +33,8 @@ import { QuillModule } from 'ngx-quill';
 import { RouterModule, Routes } from '@angular/router';
 import { PagesRoutingModule } from './pages-routing.module';
 import { AuthService } from '../core/services/auth.service';
+import { VideoManagerComponent } from './video-manager/video-manager.component';
+import { VideoService } from '../core/services/video.service';
 
 const antDesignIcons = AllIcons as {
   [key: string]: IconDefinition;
@@ -45,6 +47,7 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(key => antDesign
     VipListComponent,
     UserNoteComponent,
     ArticleManagerComponent,
+    VideoManagerComponent,
   ],
   imports: [
     CommonModule,
@@ -76,6 +79,7 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(key => antDesign
     UserNoteService,
     ArticleService,
     FileTempService,
+    VideoService,
   ]
 })
 export class PagesModule { }
